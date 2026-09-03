@@ -14,8 +14,6 @@
             --text-dark: #191F28;
             --text-sub: #8B95A1;
             --border-color: #E5E8EB;
-            --orange-banner: #FFF7ED;
-            --orange-text: #C2410C;
         }
 
         * {
@@ -88,6 +86,10 @@
             color: #FFFFFF;
         }
 
+        .btn-register:hover {
+            background: var(--primary-hover);
+        }
+
         /* Main Container */
         .container {
             max-width: 1120px;
@@ -156,12 +158,16 @@
         .btn-meal-view {
             background: #F2F4F6;
             border: none;
-            padding: 0.3rem 0.6rem;
+            padding: 0.35rem 0.7rem;
             border-radius: 6px;
             font-size: 0.75rem;
             font-weight: 600;
             color: #4E5968;
             cursor: pointer;
+        }
+
+        .btn-meal-view:hover {
+            background: #E5E8EB;
         }
 
         .stat-value {
@@ -188,6 +194,10 @@
             font-size: 0.95rem;
             cursor: pointer;
             margin-top: 1rem;
+        }
+
+        .btn-action-full:hover {
+            background: var(--primary-hover);
         }
 
         /* Bottom Grid */
@@ -275,7 +285,7 @@
             line-height: 1.4;
         }
 
-        /* Modal */
+        /* Modals */
         .modal {
             display: none;
             position: fixed;
@@ -307,6 +317,17 @@
             margin-bottom: 1.5rem;
         }
 
+        .close-icon {
+            position: absolute;
+            top: 1.2rem;
+            right: 1.5rem;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-sub);
+            border: none;
+            background: none;
+        }
+
         .meal-box {
             background: #F9FAFB;
             border-radius: 12px;
@@ -330,7 +351,60 @@
             line-height: 1.5;
         }
 
-        .btn-close {
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 0.3rem;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 0.7rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 0.9rem;
+        }
+
+        .input-inline {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn-inline {
+            padding: 0.7rem 1rem;
+            background: #333D4B;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .msg-info {
+            font-size: 0.8rem;
+            margin-top: 0.3rem;
+        }
+
+        .btn-submit-full {
+            width: 100%;
+            padding: 0.8rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            margin-top: 1rem;
+        }
+
+        .btn-close-full {
             width: 100%;
             padding: 0.8rem;
             background: #333D4B;
@@ -356,9 +430,9 @@
             <div class="school-badge">서라벌고등학교</div>
             <div class="school-badge" style="background:#E8F3FF; color:#1B64DA;">석식 매칭 모듈</div>
         </div>
-        <div class="auth-btns">
-            <button class="btn-auth btn-login" onclick="alert('로그인 모달')">로그인</button>
-            <button class="btn-auth btn-register" onclick="alert('회원가입 모달')">회원가입</button>
+        <div class="auth-btns" id="auth-container">
+            <button class="btn-auth btn-login" onclick="openModal('login-modal')">로그인</button>
+            <button class="btn-auth btn-register" onclick="openModal('register-modal')">회원가입</button>
         </div>
     </header>
 
@@ -394,7 +468,7 @@
                 <div style="font-size: 0.75rem; color: var(--text-sub); margin-bottom: 1rem;">
                     양도 완료 시 충전할 수 있어요.
                 </div>
-                <button class="btn-action-full">+ 석식 양도</button>
+                <button class="btn-action-full" onclick="handleTransferClick()">+ 석식 양도</button>
             </div>
         </div>
 
@@ -403,15 +477,15 @@
                 <div class="section-title">MARKETPLACE</div>
                 <div class="section-header">
                     <h3>지금 올라온 석식 신청권</h3>
-                    <span style="font-size: 0.8rem; color: var(--text-sub);">필터</span>
+                    <span style="font-size: 0.8rem; color: var(--text-sub); cursor: pointer;">필터</span>
                 </div>
 
                 <div class="tab-group">
-                    <button class="tab-btn active">전체</button>
-                    <button class="tab-btn">오늘</button>
+                    <button class="tab-btn active" onclick="switchTab(this, 'all')">전체</button>
+                    <button class="tab-btn" onclick="switchTab(this, 'today')">오늘</button>
                 </div>
 
-                <div class="empty-box">
+                <div id="posts-container" class="empty-box">
                     <div style="margin-bottom: 0.5rem; font-size: 1.1rem;">아직 등록된 석식 신청권이 없어요</div>
                     <div>다른 날짜를 선택하거나, 직접 석식 신청권을 올려보세요.</div>
                 </div>
@@ -439,7 +513,7 @@
                 </div>
 
                 <div style="text-align: center; margin: 1rem 0;">
-                    <a href="#" style="font-size: 0.8rem; color: var(--text-sub); text-decoration: none;">양도 방법 보기 &gt;</a>
+                    <a href="javascript:void(0)" onclick="alert('양도 가이드 준비 중입니다.')" style="font-size: 0.8rem; color: var(--text-sub); text-decoration: none;">양도 방법 보기 &gt;</a>
                 </div>
 
                 <div class="info-alert">
@@ -452,6 +526,7 @@
 
     <div class="modal" id="meal-modal">
         <div class="modal-content">
+            <button class="close-icon" onclick="closeModal('meal-modal')">&times;</button>
             <div class="modal-header">
                 <span>🍱 서라벌고등학교 오늘의 급식</span>
             </div>
@@ -466,18 +541,95 @@
                 <p id="dinner-menu">급식 정보를 불러오는 중...</p>
             </div>
 
-            <button class="btn-close" onclick="closeMealModal()">닫기</button>
+            <button class="btn-close-full" onclick="closeModal('meal-modal')">닫기</button>
+        </div>
+    </div>
+
+    <div class="modal" id="login-modal">
+        <div class="modal-content">
+            <button class="close-icon" onclick="closeModal('login-modal')">&times;</button>
+            <div class="modal-header">
+                <span>로그인</span>
+            </div>
+            <form onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label>아이디</label>
+                    <input type="text" id="login-id" required>
+                </div>
+                <div class="form-group">
+                    <label>비밀번호</label>
+                    <input type="password" id="login-pw" required>
+                </div>
+                <button type="submit" class="btn-submit-full">로그인</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal" id="register-modal">
+        <div class="modal-content">
+            <button class="close-icon" onclick="closeModal('register-modal')">&times;</button>
+            <div class="modal-header">
+                <span>회원가입</span>
+            </div>
+            <form onsubmit="handleRegister(event)">
+                <div class="form-group">
+                    <label>아이디</label>
+                    <div class="input-inline">
+                        <input type="text" id="reg-id" required>
+                        <button type="button" class="btn-inline" onclick="checkDup('username')">중복확인</button>
+                    </div>
+                    <div id="msg-reg-id" class="msg-info"></div>
+                </div>
+
+                <div class="form-group">
+                    <label>닉네임</label>
+                    <div class="input-inline">
+                        <input type="text" id="reg-nick" required>
+                        <button type="button" class="btn-inline" onclick="checkDup('nickname')">중복확인</button>
+                    </div>
+                    <div id="msg-reg-nick" class="msg-info"></div>
+                </div>
+
+                <div class="form-group">
+                    <label>비밀번호</label>
+                    <input type="password" id="reg-pw" required>
+                </div>
+
+                <div class="form-group">
+                    <label>이름</label>
+                    <input type="text" id="reg-name" required>
+                </div>
+
+                <div class="form-group">
+                    <label>전화번호</label>
+                    <input type="text" id="reg-phone" placeholder="01012345678" required>
+                </div>
+
+                <div class="form-group">
+                    <label>학번</label>
+                    <input type="text" id="reg-student" placeholder="예: 10424" required>
+                </div>
+
+                <button type="submit" class="btn-submit-full">가입하기</button>
+            </form>
         </div>
     </div>
 
     <script>
-        function openMealModal() {
-            document.getElementById('meal-modal').classList.add('active');
-            fetchMeal();
+        let userState = null;
+        let dupCheck = { username: false, nickname: false };
+
+        function openModal(id) {
+            document.getElementById(id).classList.add('active');
         }
 
-        function closeMealModal() {
-            document.getElementById('meal-modal').classList.remove('active');
+        function closeModal(id) {
+            document.getElementById(id).classList.remove('active');
+        }
+
+        function openMealModal() {
+            openModal('meal-modal');
+            fetchMeal();
         }
 
         function fetchMeal() {
@@ -488,9 +640,121 @@
                     document.getElementById('dinner-menu').innerText = data.dinner || '오늘 저녁 정보가 없습니다.';
                 })
                 .catch(() => {
-                    document.getElementById('lunch-menu').innerText = '급식 정보를 불러올 수 없습니다.';
-                    document.getElementById('dinner-menu').innerText = '급식 정보를 불러올 수 없습니다.';
+                    document.getElementById('lunch-menu').innerText = '급식 정보를 불러오지 못했습니다.';
+                    document.getElementById('dinner-menu').innerText = '급식 정보를 불러오지 못했습니다.';
                 });
+        }
+
+        function checkDup(type) {
+            const val = type === 'username' ? document.getElementById('reg-id').value : document.getElementById('reg-nick').value;
+            const targetEl = type === 'username' ? document.getElementById('msg-reg-id') : document.getElementById('msg-reg-nick');
+
+            if (!val.trim()) {
+                targetEl.style.color = '#EF4444';
+                targetEl.innerText = '값을 입력해주세요.';
+                return;
+            }
+
+            fetch('/api/check-duplicate', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ field: type, value: val })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.available) {
+                    targetEl.style.color = '#10B981';
+                    targetEl.innerText = data.message;
+                    dupCheck[type] = true;
+                } else {
+                    targetEl.style.color = '#EF4444';
+                    targetEl.innerText = data.message;
+                    dupCheck[type] = false;
+                }
+            })
+            .catch(() => {
+                targetEl.style.color = '#EF4444';
+                targetEl.innerText = '서버 연결 실패';
+            });
+        }
+
+        function handleRegister(e) {
+            e.preventDefault();
+            if (!dupCheck.username || !dupCheck.nickname) {
+                alert('아이디 및 닉네임 중복 확인을 진행해 주세요.');
+                return;
+            }
+
+            const bodyData = {
+                username: document.getElementById('reg-id').value,
+                nickname: document.getElementById('reg-nick').value,
+                password: document.getElementById('reg-pw').value,
+                name: document.getElementById('reg-name').value,
+                phone: document.getElementById('reg-phone').value,
+                school: '서라벌고등학교',
+                student_id: document.getElementById('reg-student').value
+            };
+
+            fetch('/api/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(bodyData)
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    alert('회원가입이 완료되었습니다.');
+                    closeModal('register-modal');
+                    openModal('login-modal');
+                } else {
+                    alert(data.error || '회원가입 중 오류가 발생했습니다.');
+                }
+            })
+            .catch(() => alert('서버 통신 실패'));
+        }
+
+        function handleLogin(e) {
+            e.preventDefault();
+            const bodyData = {
+                username: document.getElementById('login-id').value,
+                password: document.getElementById('login-pw').value
+            };
+
+            fetch('/api/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(bodyData)
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    userState = data.user;
+                    alert(`${userState.nickname}님 환영합니다!`);
+                    closeModal('login-modal');
+                    document.getElementById('auth-container').innerHTML = `
+                        <span style="font-weight: 700; font-size: 0.9rem; margin-right: 0.5rem;">${userState.nickname}님</span>
+                        <button class="btn-auth btn-login" onclick="location.reload()">로그아웃</button>
+                    `;
+                } else {
+                    alert(data.error || '로그인 실패');
+                }
+            })
+            .catch(() => alert('서버 통신 실패'));
+        }
+
+        function handleTransferClick() {
+            if (!userState) {
+                alert('로그인이 필요한 기능입니다.');
+                openModal('login-modal');
+                return;
+            }
+            alert('석식 양도 등록 페이지로 이동합니다.');
+        }
+
+        function switchTab(el, type) {
+            const btns = document.querySelectorAll('.tab-btn');
+            btns.forEach(btn => btn.classList.remove('active'));
+            el.classList.add('active');
         }
     </script>
 </body>
